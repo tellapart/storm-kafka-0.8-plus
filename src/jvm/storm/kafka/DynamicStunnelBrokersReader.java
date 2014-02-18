@@ -7,12 +7,12 @@ import java.util.*;
 
 public class DynamicStunnelBrokersReader extends DynamicBrokersReader {
 
-    private List<Long> _stunnelPorts;
+    private List<Integer> _stunnelPorts;
     private Map<String, Integer> _hostStunnelPortMap;
 
     public DynamicStunnelBrokersReader(Map conf, String zkStr, String zkPath, String topic) {
         super(conf, zkStr, zkPath, topic);
-        _stunnelPorts = (List<Long>)conf.get("tellapart.storm.stunnel.ports");
+        _stunnelPorts = (List<Integer>)conf.get("tellapart.storm.stunnel.ports");
         _hostStunnelPortMap = new HashMap<String, Integer>();
     }
 
