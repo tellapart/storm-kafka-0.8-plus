@@ -26,7 +26,11 @@ public class DynamicStunnelBrokersReader extends DynamicBrokersReader {
             if (_hostStunnelPortMap.containsKey(host)) {
                 port = _hostStunnelPortMap.get(host);
             } else {
-                port = _stunnelPorts.get(0).intValue();
+                // If there are no more stunnel ports to be assigned, throw an error.
+                if (_stunnelPorts.isEmpty()) {
+                    throw new RuntimeException("No remaining stunnel ports to assign to brokers.");
+                }
+                port = _stunnelPorts.get(0);
                 _stunnelPorts.remove(0);
                 _hostStunnelPortMap.put(host, port);
             }

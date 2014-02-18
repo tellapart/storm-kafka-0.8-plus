@@ -37,7 +37,7 @@ public class ZkCoordinator implements PartitionCoordinator {
         _refreshFreqMs = brokerConf.refreshFreqSecs * 1000;
 
         // Possibly use DynamicStunnelBrokersReader;
-        Boolean useStunnelBrokersReader = (Boolean)stormConf.get("tellapart.storm.use.stunnel.brokers.reader");
+        Boolean useStunnelBrokersReader = (Boolean)stormConf.get("tellapart.storm.use_stunnel_brokers_reader");
         if (useStunnelBrokersReader) {
             _reader = new DynamicStunnelBrokersReader(stormConf, brokerConf.brokerZkStr, brokerConf.brokerZkPath, spoutConfig.topic);
         } else {
