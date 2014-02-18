@@ -114,7 +114,7 @@ public class DynamicBrokersReader {
      * @param contents
      * @return
      */
-    private Broker getBrokerHost(byte[] contents) {
+    protected Broker getBrokerHost(byte[] contents) {
         try {
             Map<Object, Object> value = (Map<Object, Object>) JSONValue.parse(new String(contents, "UTF-8"));
             String host = (String) value.get("host");
