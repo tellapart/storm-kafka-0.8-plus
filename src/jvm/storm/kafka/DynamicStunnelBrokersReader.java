@@ -34,7 +34,8 @@ public class DynamicStunnelBrokersReader extends DynamicBrokersReader {
                 _stunnelPorts.remove(0);
                 _hostStunnelPortMap.put(host, port);
             }
-            return new Broker(host, port);
+            // Always return 127.0.0.1 here so that stunnel on the client side can be utilized.
+            return new Broker("127.0.0.1", port);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
