@@ -1,13 +1,8 @@
 package storm.kafka;
 
-import backtype.storm.Config;
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.CuratorFrameworkFactory;
-import com.netflix.curator.retry.ExponentialBackoffRetry;
-import com.netflix.curator.test.TestingServer;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import storm.kafka.trident.GlobalPartitionInformation;
 
 import java.util.*;
@@ -17,13 +12,19 @@ import static org.junit.Assert.assertTrue;
 
 public class DynamicStunnelBrokersReaderTest extends DynamicBrokersReadersTestBase {
 
-    private List<Integer> sTunnelPorts;
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    private Map<String, Number> hostToStunnelPort;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        sTunnelPorts = new ArrayList<Integer>(Arrays.asList(1234, 1235, 1236));
-        conf.put("tellapart.storm.stunnel.ports", new ArrayList(sTunnelPorts));
+        hostToStunnelPort = new HashMap<String, Number>();
+        hostToStunnelPort.put("localhost", 1233);
+        hostToStunnelPort.put("another_host", 1234);
+        hostToStunnelPort.put("yet_another_host", 1235);
+        conf.put("tellapart.storm.stunnel.host_to_stunnel_port", hostToStunnelPort);
         dynamicBrokersReader = new DynamicStunnelBrokersReader(conf, server.getConnectString(), MASTER_PATH, TOPIC);
     }
 
@@ -35,14 +36,17 @@ public class DynamicStunnelBrokersReaderTest extends DynamicBrokersReadersTestBa
         GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();
 
         assertEquals(3, brokerInfo.getOrderedPartitions().size());
-
-        assertTrue(sTunnelPorts.contains(brokerInfo.getBrokerFor(0).port));
-        sTunnelPorts.remove(Integer.valueOf(brokerInfo.getBrokerFor(0).port));
-
-        assertTrue(sTunnelPorts.contains(brokerInfo.getBrokerFor(1).port));
-        sTunnelPorts.remove(Integer.valueOf(brokerInfo.getBrokerFor(1).port));
-
-        assertTrue(sTunnelPorts.contains(brokerInfo.getBrokerFor(2).port));
-        sTunnelPorts.remove(Integer.valueOf(brokerInfo.getBrokerFor(2).port));
+        assertEquals(1233, brokerInfo.getBrokerFor(0).port);
+        assertEquals(1234, brokerInfo.getBrokerFor(1).port);
+        assertEquals(1235, brokerInfo.getBrokerFor(2).port);
     }
+
+    @Test
+    public void testGetBrokerInfoMissingHostname() throws Exception {
+        addPartition(0, 0, "some_random_host", 9092);
+        exception.expect(RuntimeException.class);
+        GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();
+    }
+
+
 }
