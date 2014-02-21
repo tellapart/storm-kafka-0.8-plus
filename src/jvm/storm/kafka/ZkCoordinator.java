@@ -35,7 +35,14 @@ public class ZkCoordinator implements PartitionCoordinator {
 
         ZkHosts brokerConf = (ZkHosts) spoutConfig.hosts;
         _refreshFreqMs = brokerConf.refreshFreqSecs * 1000;
-        _reader = new DynamicBrokersReader(stormConf, brokerConf.brokerZkStr, brokerConf.brokerZkPath, spoutConfig.topic);
+
+        // Possibly use DynamicStunnelBrokersReader;
+        Boolean useStunnelBrokersReader = (Boolean)stormConf.get("tellapart.storm.use_stunnel_brokers_reader");
+        if (useStunnelBrokersReader) {
+            _reader = new DynamicStunnelBrokersReader(stormConf, brokerConf.brokerZkStr, brokerConf.brokerZkPath, spoutConfig.topic);
+        } else {
+            _reader = new DynamicBrokersReader(stormConf, brokerConf.brokerZkStr, brokerConf.brokerZkPath, spoutConfig.topic);
+        }
 
     }
 
