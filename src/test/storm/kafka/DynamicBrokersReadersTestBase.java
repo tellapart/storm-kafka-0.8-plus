@@ -1,7 +1,6 @@
 package storm.kafka;
 
 import backtype.storm.Config;
-import com.apple.laf.AquaButtonBorder;
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
